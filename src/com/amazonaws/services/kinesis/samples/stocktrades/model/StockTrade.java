@@ -19,6 +19,10 @@ import java.io.IOException;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 
 /**
  * Captures the key elements of a stock trade, such as the ticker symbol, price,
@@ -40,6 +44,7 @@ public class StockTrade {
         SELL
     }
 
+    private String timestamp;
     private String tickerSymbol;
     private TradeType tradeType;
     private double price;
@@ -55,6 +60,7 @@ public class StockTrade {
         this.price = price;
         this.quantity = quantity;
         this.id = id;
+        this.timestamp = getISOTimesteamp();
     }
 
     public String getTickerSymbol() {
@@ -77,6 +83,10 @@ public class StockTrade {
         return id;
     }
 
+    public String getTimestamp() {
+        return timestamp;
+    }
+
     public byte[] toJsonAsBytes() {
         try {
             return JSON.writeValueAsBytes(this);
@@ -95,8 +105,19 @@ public class StockTrade {
 
     @Override
     public String toString() {
-        return String.format("ID %d: %s %d shares of %s for $%.02f",
-                id, tradeType, quantity, tickerSymbol, price);
+        return String.format("ID %d: %s %s %d shares of %s for $%.02f",
+                id, timestamp, tradeType, quantity, tickerSymbol, price);
+    }
+
+    private String getISOTimesteamp() {
+        DateTime dt = new DateTime(DateTimeZone.UTC);
+        //2013-08-31T01:02:33Z
+
+
+        DateTimeFormatter fmt = ISODateTimeFormat.dateTime();
+        String str = fmt.print(dt);
+        return str;
+
     }
 
 }
